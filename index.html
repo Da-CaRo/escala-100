@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <title>Escala-100</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/Da-CaRo/site-configs@main/control.js" data-web="escala-100"></script>
+
+    <style>
+        /* 1. DEFINICIÓN DE VARIABLES DE COLOR */
+        :root {
+            --color-acento: #facc15;
+            /* Turquesa vibrante */
+            --color-fondo: #0f172a;
+            /* Un azul pizarra muy oscuro (slate-900) */
+            --color-tarjeta: #1e293b;
+            /* Un tono más claro para las tarjetas (slate-800) */
+            --color-texto: #f8fafc;
+            /* Blanco azulado muy limpio */
+            --color-texto-tarjeta: #94a3b8;
+            /* Gris suave para descripciones */
+            --color-borde-tarjeta: #334155;
+            /* Bordes sutiles */
+        }
+
+        /* 2. APLICACIÓN DE VARIABLES A LOS ESTILOS GLOBALMENTE */
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            background-color: var(--color-fondo);
+            /* Usando variable */
+            color: var(--color-texto);
+            /* Usando variable */
+        }
+
+        /* Para usar una fuente monoespaciada en títulos específicos */
+        .font-code {
+            font-family: 'Space Mono', ui-monospace, SFMono-Regular, monospace;
+        }
+
+        .font-escala {
+            font-family: 'Fredoka', sans-serif;
+            letter-spacing: -0.04em;
+            /* Ligeramente más juntas para compensar el grosor */
+            text-transform: uppercase;
+
+            /* Degradado de texto */
+            background: linear-gradient(135deg, #facc15 0%, #22c55e 50%, #06b6d4 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            /* Animación suave de brillo */
+            animation: titleGlow 4s ease-in-out infinite alternate, moveGradient 6s linear infinite;
+            filter: drop-shadow(0 0 12px rgba(34, 197, 94, 0.35));
+        }
+
+        /* Animación del movimiento del degradado */
+        @keyframes moveGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Animación sutil de pulso en la sombra neón */
+        @keyframes titleGlow {
+            0% {
+                filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.3));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 16px rgba(6, 182, 212, 0.6));
+            }
+        }
+
+        /* Sobrescribir las clases de Tailwind con las variables (para el color de acento) */
+        .text-acento {
+            color: var(--color-acento);
+        }
+
+        .hover-acento:hover {
+            color: var(--color-acento);
+        }
+
+        .bg-tarjeta {
+            background-color: var(--color-tarjeta);
+        }
+
+        .border-tarjeta {
+            border-color: var(--color-borde-tarjeta);
+        }
+
+        .border-tarjeta:hover {
+            border-color: var(--color-acento);
+        }
+
+        .text-tarjeta {
+            color: var(--color-texto-tarjeta);
+        }
+
+        .item-glow {
+            filter: drop-shadow(0 0 8px var(--color-acento));
+        }
+
+        .card {
+            --card-w: 110px;
+            --card-h: 150px;
+
+            width: var(--card-w);
+            height: var(--card-h);
+            background-color: var(--color-tarjeta);
+            border: 2px solid var(--color-borde-tarjeta);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card.dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+
+        .card-player {
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            /*touch-action: none;*/
+        }
+
+        .card-player:active {
+            cursor: grabbing;
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #ef4444, #991b1b);
+            border-color: #f87171;
+        }
+
+        .card-yellow {
+            background: linear-gradient(135deg, #eab308, #854d0e);
+            border-color: #fde047;
+            color: #000;
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border-color: #60a5fa;
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #22c55e, #15803d);
+            border-color: #4ade80;
+        }
+
+
+
+        .chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 2px solid var(--color-borde-tarjeta);
+            background: transparent;
+            color: var(--color-texto-tarjeta);
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            border-color: var(--color-acento);
+        }
+
+        .chip.active {
+            background: var(--color-acento);
+            border-color: var(--color-acento);
+            color: white;
+            box-shadow: 0 0 10px rgba(184, 63, 192, 0.4);
+        }
+
+        /* Estilos para el Slider Dual */
+        .range-slider {
+            position: absolute;
+            width: 100%;
+            height: 0;
+            outline: none;
+            background: none;
+            -webkit-appearance: none;
+            pointer-events: none;
+            /* Permite hacer clic a través del fondo */
+            z-index: 10;
+        }
+
+        /* Permitir interactuar únicamente con los tiradores (bolas) */
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-acento);
+            cursor: pointer;
+            pointer-events: auto;
+            /* Activa el arrastre solo en la bola */
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s ease;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 50%;
+            background: var(--color-acento);
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Reducimos el tamaño en móviles para que quepan más en pantalla */
+        @media (max-width: 640px) {
+            .card {
+                --card-w: 90px;
+                --card-h: 130px;
+            }
+
+            .card-title {
+                font-size: 0.55rem;
+                -webkit-line-clamp: 2;
+            }
+
+            .card-artist {
+                font-size: 0.45rem;
+                -webkit-line-clamp: 2;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen antialiased">
+    <header class="bg-gray-900 shadow-md p-4 border-b border-gray-800 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center py-0">
+            <div class="flex items-center space-x-2">
+                <img src="img/favicon.png" alt="Icono Escala-100" class="h-8 w-8">
+                <h1 class="text-2xl md:text-3xl font-extrabold text-acento font-escala animate-pulse">
+                    Escala-100
+                </h1>
+            </div>
+
+            <button id="reset-game-btn"
+                class="py-2 px-4 bg-gray-700 hover:bg-gray-600 text-red-400 font-bold rounded-lg transition duration-150 items-center justify-center text-base disabled:opacity-50 hidden"
+                title="Acabar Partida">
+                🛑 Salir
+            </button>
+        </div>
+    </header>
+    <div id="start-buttons">
+        <div class="py-8 md:py-12">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-4">
+                    ¿En qué punto de la <span class="font-escala text-acento animate-pulse">escala</span> estás?
+                </h1>
+                <p class="text-xl text-tarjeta mb-12 max-w-2xl mx-auto">
+                    Una escala del 1 al 100 y una sola pregunta. ¿Seréis capaces de colocar cada respuesta en su lugar
+                    correcto?
+                </p>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <div
+                        class="bg-tarjeta p-6 rounded-lg shadow-xl border border-tarjeta transition duration-300 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4">
+                                <span class="text-acento text-4xl block">❔​</span>
+                                <h3 class="text-4xl font-bold">Preguntas</h3>
+                            </div>
+                            <p class="text-s mt-1 mb-1 opacity-70 font-mono"></p>
+                            <p class="text-tarjeta text-base">
+                            <div class="flex flex-col space-y-2 mb-4">
+                                <button id="questions-start-btn" onclick="switchMode('questions')"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-150">
+                                    Empezar
+                                </button>
+                            </div>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-tarjeta p-6 rounded-lg shadow-xl border border-tarjeta transition duration-300 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4">
+                                <span class="text-acento text-4xl block">🕹️</span>
+                                <h3 class="text-4xl font-bold">Tablero</h3>
+                            </div>
+                            <p class="text-s mt-1 mb-1 opacity-70 font-mono"></p>
+                            <p class="text-tarjeta text-base">
+                            <div class="flex flex-col space-y-2 mb-4">
+                                <label
+                                    class="text-sm font-bold text-tarjeta uppercase tracking-widest text-center">Añadir
+                                    Jugadores</label>
+
+                                <div class="flex space-x-2">
+                                    <input type="text" id="player-name-input" placeholder="Introduce jugador"
+                                        class="flex-1 p-3 bg-gray-700 border border-acento text-white rounded-lg focus:outline-none placeholder-gray-400"
+                                        maxlength="15"> <button id="add-player-btn"
+                                        class="shrink-0 bg-[--color-acento] text-white font-bold p-3 rounded-lg transition duration-150">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col space-y-2 mb-4">
+                                <button id="start-btn" onclick="switchMode('board')"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-150">
+                                    Empezar
+                                </button>
+                            </div>
+                            </p>
+                        </div>
+                        <a href="https://da-caro.github.io/setup-and-play/escala.html" target="_blank" class="block">
+                            <span class="mt-5 inline-block text-sm font-medium text-acento hover:underline">Ver
+                                Instrucciones →</span></a>
+                    </div>
+
+                    <div
+                        class="bg-tarjeta p-6 rounded-lg shadow-xl border border-tarjeta transition duration-300 h-full flex flex-col justify-between lg:col-span-2">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4">
+                                <span class="text-loot-and-run text-4xl block">⚙️</span>
+                                <h3 class="text-4xl font-bold">Jugadores</h3>
+                            </div>
+                            <p class="text-tarjeta text-base">
+                            <div class="flex flex-col space-y-2 mb-4">
+
+                                <div id="players-list-display"
+                                    class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-gray-900/50 rounded-lg border border-dashed border-gray-700">
+                                </div>
+
+                            </div>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <main class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+
+        <div id="game-layout" class="flex flex-col lg:flex-row lg:space-x-8 ">
+            <div id="view-question" class="hidden w-full max-w-2xl flex flex-col items-center space-y-6">
+
+                <!-- Contenedor donde se muestra la carta de escala sacada -->
+                <!--<div id="escala-card-display"
+                    class="w-full bg-tarjeta border-2 border-tarjeta rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+                    <h2 id="escala-situation" class="text-2xl font-bold text-white">¿Listos para jugar?</h2>
+                    <h2 class="text-2xl font-bold text-white">Tu número es <span id="escala-description">/</span></h2>
+                    <h2 id="escala-question" class="text-2xl font-bold text-white"></h2>
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700/50">
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                            <span class="text-xs text-red-400 font-bold block">1 (Mínimo)</span>
+                            <p id="escala-min" class="text-sm text-gray-300 font-medium">---</p>
+                        </div>
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                            <span class="text-xs text-green-400 font-bold block">100 (Máximo)</span>
+                            <p id="escala-max" class="text-sm text-gray-300 font-medium">---</p>
+                        </div>
+                    </div>
+                </div>-->
+                <!-- Tarjeta contenedora de la pregunta -->
+                <!-- Tarjeta contenedora de la pregunta (ancho más contenido) -->
+                <!-- Tarjeta contenedora de la pregunta -->
+                <div
+                    class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-7 max-w-md mx-auto shadow-2xl backdrop-blur-sm text-center font-sans">
+
+                    <!-- 1. Situación -->
+                    <p id="escala-situation" class="text-tarjeta text-xl sm:text-2xl leading-relaxed mb-4">
+                        Estás preparando una cena para tus amigos y quieres sorprenderles con tus dotes culinarias.
+                    </p>
+
+                    <!-- 2. "Tu número es" -->
+                    <span class="text-tarjeta text-xl sm:text-2xl leading-relaxed mb-4">
+                        Tu número es
+                    </span>
+
+                    <!-- 3. Descripción (en negrita) -->
+                    <p id="escala-description"
+                        class="text-tarjeta text-xl sm:text-2xl leading-relaxed mb-4 font-extrabold text-white leading-snug">
+                        Cocinar una tortilla de patatas perfecta sin romperla al darle la vuelta.
+                    </p>
+
+                    <!-- 4. Pregunta (con fondo y bordes redondeados) -->
+                    <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-3 mb-6 max-w-[80%] mx-auto">
+                        <p id="escala-question" class="text-emerald-400 font-bold text-xl sm:text-2xl leading-snug">
+                            ¿Qué nivel de dificultad tiene esta hazaña?
+                        </p>
+                    </div>
+
+                    <!-- 5. Escala inferior: Min (1) a la izquierda, Max (100) a la derecha -->
+                    <div class="relative pt-1">
+                        <div class="flex justify-between items-end mb-2.5">
+
+                            <!-- Extremo Izquierdo (1) -->
+                            <div class="text-center max-w-[42%]">
+                                <span id="escala-min"
+                                    class="text-[11px] text-slate-400 font-medium block leading-tight mb-1">
+                                    Lo más fácil del mundo
+                                </span>
+                                <span
+                                    class="text-4xl sm:text-5xl font-black text-purple-400 font-mono tracking-tighter">
+                                    1
+                                </span>
+                            </div>
+
+                            <!-- Extremo Derecho (100) -->
+                            <div class="text-center max-w-[42%]">
+                                <span id="escala-max"
+                                    class="text-[11px] text-slate-400 font-medium block leading-tight mb-1">
+                                    Nivel chef tres estrellas Michelin
+                                </span>
+                                <span class="text-4xl sm:text-5xl font-black text-rose-500 font-mono tracking-tighter">
+                                    100
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <!-- Línea con degradado exacto por porcentajes (Morado -> Azul -> Verde -> Amarillo -> Naranja -> Rojo) -->
+                        <div class="w-full h-2.5 rounded-full shadow-inner"
+                            style="background: linear-gradient(to right, #9333ea 0%, #3b82f6 20%, #22c55e 40%, #eab308 60%, #f97316 80%, #ef4444 100%);">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-draw-question"
+                    class="w-full md:w-auto bg-[--color-acento] text-white font-bold py-5 px-8 h-16 rounded-2xl shadow-xl hover:opacity-90 transition-all font-code text-lg uppercase">
+                    ❔ Mostrar la primera pregunta
+                </button>
+                <button onclick="switchMode('selection')"
+                    class="text-texto-gris hover:text-white text-sm font-mono mt-8 underline decoration-acento">← Volver
+                    al
+                    menú</button>
+
+            </div>
+
+
+        </div>
+
+        <div id="view-board" class="hidden w-full flex flex-col items-center space-y-8">
+
+            <!-- ZONA SUPERIOR: Banquillo de tarjetas iniciales -->
+            <div
+                class="flex flex-col items-center bg-gray-900/60 p-4 rounded-3xl border border-gray-800 w-full max-w-2xl">
+                <span class="text-xs font-mono text-texto-tarjeta uppercase mb-3 tracking-widest">Cartas
+                    Disponibles</span>
+
+                <div id="cards-container-top"
+                    class="flex flex-wrap justify-center items-center gap-4 min-h-[160px] w-full p-2 border-2 border-dashed border-gray-800 rounded-2xl bg-gray-950/40">
+                    <!-- Aquí se crearán las 4 tarjetas (Roja, Amarilla, Azul, Verde) vía JS -->
+                </div>
+            </div>
+
+            <!-- ZONA INFERIOR: Línea de tiempo / Tablero libre -->
+            <div class="w-full flex flex-col items-center">
+                <span class="text-xs font-mono text-texto-tarjeta uppercase mb-2 tracking-widest">Orden de
+                    Cartas</span>
+
+                <div class="w-full overflow-x-auto pb-4">
+                    <div id="timeline"
+                        class="flex justify-center items-center gap-3 min-h-[170px] p-4 rounded-2xl border-2 border-dashed border-acento/30 bg-gray-900/20 min-w-max touch-pan-x">
+                        <!-- Aquí se podrán arrastrar las cartas desde arriba -->
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-back-player" onclick="switchMode('selection')"
+                class="text-texto-gris hover:text-white text-sm font-mono underline decoration-acento">
+                ← Volver al menú
+            </button>
+        </div>
+        </div>
+
+        </div>
+    </main>
+
+    <div id="modal-id"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start justify-center p-4 pt-16 sm:pt-24">
+        <div
+            class="bg-tarjeta border-2 border-acento p-6 rounded-2xl shadow-2xl w-full max-w-xs flex flex-col items-center">
+            <h3 class="text-white font-bold mb-4 uppercase tracking-widest text-sm">Introduce ID</h3>
+            <input type="number" id="input-game-id"
+                class="w-full bg-gray-900 border-2 border-gray-700 text-acento text-3xl text-center font-mono py-3 rounded-xl mb-6 focus:border-acento outline-none"
+                inputmode="numeric" placeholder="000">
+
+            <div class="flex gap-3 w-full">
+                <button id="btn-cancel-modal"
+                    class="flex-1 py-3 text-texto-tarjeta font-bold uppercase text-xs">Cancelar</button>
+                <button id="btn-confirm-modal"
+                    class="flex-1 py-3 bg-acento text-white font-bold rounded-lg uppercase text-xs">Validar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 border-t border-gray-800 mt-16 py-4">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+
+                <p class="text-xs text-tarjeta mb-4 md:mb-0">
+                    &copy; <span id="currentYearFooter"></span> <span class="font-code">
+                        Da_CaRo
+                    </span>
+                </p>
+
+                <div class="flex space-x-6 items-center">
+                    <a href="https://da-caro.github.io/labs" target="_blank"
+                        class="text-tarjeta hover-acento transition duration-300 text-sm">
+                        Labs
+                    </a>
+                    <a href="https://github.com/da-caro" target="_blank"
+                        class="text-tarjeta hover-acento transition duration-300 text-sm">
+                        GitHub
+                    </a>
+                    <button id="clear-storage-btn" class="text-tarjeta hover-acento transition duration-300 text-sm">
+                        Borrar Variables
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        document.getElementById('currentYearFooter').textContent = new Date().getFullYear();
+
+        import { questionsDatabase } from './data/preguntas.js';
+
+        const KEY_START = 'escala_';
+
+        window.switchMode = function (mode) {
+            localStorage.setItem(KEY_START + 'active_mode', mode);
+
+            document.getElementById('start-buttons').classList.add('hidden');
+            document.getElementById('view-question').classList.add('hidden');
+            document.getElementById('view-board').classList.add('hidden');
+
+            if (mode === 'selection') {
+                document.getElementById('start-buttons').classList.remove('hidden');
+            } else if (mode === 'questions') {
+                document.getElementById('view-question').classList.remove('hidden');
+            } else if (mode === 'board') {
+                document.getElementById('view-board').classList.remove('hidden');
+                if (typeof window.initPlayerCards === 'function') {
+                    window.initPlayerCards();
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const timeline = document.getElementById('timeline');
+            const cardsContainerTop = document.getElementById('cards-container-top');
+            const btnDrawQuestion = document.getElementById('btn-draw-question');
+            const btnBackPlayer = document.getElementById('btn-back-player');
+            const clearBtn = document.getElementById('clear-storage-btn');
+
+            let jugadoresTemporales = [];
+            const coloresJugadores = [
+                { nombre: 'Rojo', hex: '#ef4444' },
+                { nombre: 'Azul', hex: '#3b82f6' },
+                { nombre: 'Verde', hex: '#22c55e' },
+                { nombre: 'Amarillo', hex: '#eab308' },
+                { nombre: 'Rosa', hex: '#ec4899' },
+                { nombre: 'Naranja', hex: '#f97316' },
+                { nombre: 'Cian', hex: '#06b6d4' },
+                { nombre: 'Morado', hex: '#a855f7' },
+                { nombre: 'Lima', hex: '#84cc16' },
+                { nombre: 'Blanco', hex: '#f8fafc' }
+            ];
+
+            let draggedCard = null;
+
+            const defaultCards = [
+                { id: 'red', name: 'Roja', colorClass: 'card-red' },
+                { id: 'yellow', name: 'Amarilla', colorClass: 'card-yellow' },
+                { id: 'blue', name: 'Azul', colorClass: 'card-blue' },
+                { id: 'green', name: 'Verde', colorClass: 'card-green' }
+            ];
+
+            // RESTABLECIMIENTO FORZADO DE ESTADO
+            const forceResetDrag = () => {
+                draggedCard = null;
+                document.querySelectorAll('.card').forEach(card => {
+                    card.classList.remove('dragging');
+                });
+            };
+
+            // Escuchadores globales para liberar cualquier tarjeta atascada
+            window.addEventListener('mouseup', forceResetDrag);
+            window.addEventListener('touchend', forceResetDrag);
+            window.addEventListener('dragend', forceResetDrag);
+
+            // Prevenir que el navegador intente seleccionar texto al mantener pulsado
+            document.addEventListener('selectstart', (e) => {
+                if (e.target.closest('.card')) {
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('dragover', (e) => e.preventDefault());
+
+            // PERSISTENCIA
+            function loadGameState() {
+                const savedData = localStorage.getItem(KEY_START + 'save');
+                if (!savedData) return;
+
+                try {
+                    const ids = JSON.parse(savedData);
+                    if (Array.isArray(ids) && ids.length > 0 && typeof ids[0] === 'number') {
+                        localStorage.removeItem(KEY_START + 'save');
+                        return;
+                    }
+
+                    ids.forEach(id => {
+                        const questionData = questionsDatabase.find(s => s.id.toString() === id.toString());
+                        if (questionData) {
+                            timeline.appendChild(createCard(questionData, true));
+                        }
+                    });
+                } catch (e) {
+                    localStorage.removeItem(KEY_START + 'save');
+                }
+            }
+
+            clearBtn.addEventListener('click', () => {
+                if (confirm("¿Estás seguro de que quieres borrar todo el progreso y las variables guardadas?")) {
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.startsWith(KEY_START)) localStorage.removeItem(key);
+                    });
+                    if (timeline) timeline.innerHTML = '';
+                    window.location.reload();
+                }
+            });
+
+            // TARJETAS DEL JUGADOR
+            window.initPlayerCards = function () {
+                if (!cardsContainerTop || !timeline) return;
+
+                cardsContainerTop.innerHTML = '';
+                timeline.innerHTML = '';
+
+                // Si no se han añadido jugadores, usamos una lista básica por defecto
+                const listaCards = jugadoresTemporales.length > 0 ? jugadoresTemporales : [
+                    { id: '1', nombre: 'Jugador 1', color: '#ef4444' },
+                    { id: '2', nombre: 'Jugador 2', color: '#3b82f6' },
+                    { id: '3', nombre: 'Jugador 3', color: '#22c55e' }
+                ];
+
+                const savedBoard = JSON.parse(localStorage.getItem(KEY_START + 'board_state'));
+
+                if (savedBoard) {
+                    // Renderizar tarjetas guardadas en la zona superior
+                    savedBoard.top.forEach(cardId => {
+                        const cardData = listaCards.find(c => (c.id || c.nombre).toString() === cardId.toString());
+                        if (cardData) {
+                            cardsContainerTop.appendChild(createPlayerCardElement(cardData));
+                        }
+                    });
+
+                    // Renderizar tarjetas guardadas en la línea de tiempo
+                    savedBoard.timeline.forEach(cardId => {
+                        const cardData = listaCards.find(c => (c.id || c.nombre).toString() === cardId.toString());
+                        if (cardData) {
+                            timeline.appendChild(createPlayerCardElement(cardData));
+                        }
+                    });
+                } else {
+                    // Si no hay estado guardado, añadir todas las tarjetas en la zona superior
+                    listaCards.forEach(cardData => {
+                        cardsContainerTop.appendChild(createPlayerCardElement(cardData));
+                    });
+                }
+
+            };
+
+            // Función auxiliar para construir el elemento de la tarjeta
+            function createPlayerCardElement(cardData) {
+                const card = document.createElement('div');
+                card.className = `card card-player shadow-lg font-bold text-sm flex items-center justify-center cursor-grab select-none p-2 text-center`;
+                card.style.backgroundColor = cardData.color;
+                card.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                card.style.color = '#0f172a';
+                card.dataset.cardId = cardData.id || cardData.nombre;
+                card.draggable = true;
+
+                card.innerHTML = `<span class="drop-shadow-md uppercase tracking-wider pointer-events-none font-extrabold text-xs sm:text-sm break-words max-w-full">${cardData.nombre}</span>`;
+
+                card.addEventListener('dragstart', (e) => {
+                    draggedCard = card;
+                    setTimeout(() => card.classList.add('dragging'), 0);
+                    if (e.dataTransfer) {
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', card.dataset.cardId);
+                    }
+                });
+
+                card.addEventListener('dragend', () => {
+                    forceResetDrag();
+                });
+
+                // Habilitar soporte táctil
+                //addTouchSupport(card); // Modo tactil mejorado
+
+                return card;
+            }
+
+            btnBackPlayer.addEventListener('click', () => {
+                if (confirm("¿Estás seguro de que quieres volver al menú? Se borrará todo el progreso de tu tablero actual.")) {
+                    localStorage.removeItem(KEY_START + 'board_state');
+
+                    // Limpiamos la línea de tiempo del DOM
+                    if (timeline) timeline.innerHTML = '';
+
+                    forceResetDrag();
+                    switchMode('selection');
+                }
+            });
+
+            function saveBoardState() {
+                const topCards = [...cardsContainerTop.children].map(card => card.dataset.cardId);
+                const timelineCards = [...timeline.children].map(card => card.dataset.cardId);
+
+                const boardState = {
+                    top: topCards,
+                    timeline: timelineCards
+                };
+
+                localStorage.setItem(KEY_START + 'board_state', JSON.stringify(boardState));
+            }
+
+            // MODO DJ / PREGUNTAS
+            btnDrawQuestion.addEventListener('click', () => {
+                let usedIds = JSON.parse(localStorage.getItem(KEY_START + 'used_questions')) || [];
+                let availableQuestions = questionsDatabase.filter(question => !usedIds.includes(question.id));
+
+                if (availableQuestions.length === 0) {
+                    alert(`¡Se han terminado las preguntas, reiniciando historial...`);
+                    usedIds = [];
+                    localStorage.setItem(KEY_START + 'used_questions', JSON.stringify(usedIds));
+                    availableQuestions = questionsDatabase;
+                }
+
+                const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+
+                usedIds.push(randomQuestion.id);
+                localStorage.setItem(KEY_START + 'used_questions', JSON.stringify(usedIds));
+
+                // NUEVO: Guardar la pregunta actual en localStorage
+                localStorage.setItem(KEY_START + 'current_question', JSON.stringify(randomQuestion));
+
+                renderQuestion(randomQuestion);
+            });
+
+            // Función auxiliar para pintar los datos de la pregunta
+            function renderQuestion(questionData) {
+                document.getElementById('escala-situation').textContent = questionData.situation;
+                document.getElementById('escala-description').textContent = questionData.description;
+                document.getElementById('escala-question').textContent = questionData.question;
+                document.getElementById('escala-min').textContent = questionData.min;
+                document.getElementById('escala-max').textContent = questionData.max;
+                btnDrawQuestion.textContent = "⏭️ Siguiente Pregunta";
+            }
+
+            function addTouchSupport(card) {
+                let touchStartX = 0;
+                let touchStartY = 0;
+                let clone = null;
+
+                card.addEventListener('touchstart', (e) => {
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+
+                    // Crear una copia visual que siga al dedo
+                    clone = card.cloneNode(true);
+                    clone.style.position = 'fixed';
+                    clone.style.zIndex = '1000';
+                    clone.style.pointerEvents = 'none'; // Importante para que elementFromPoint detecte lo que hay debajo
+                    clone.style.opacity = '0.85';
+                    clone.style.transform = 'scale(1.05)';
+                    clone.style.width = `${card.offsetWidth}px`;
+                    clone.style.height = `${card.offsetHeight}px`;
+                    clone.style.left = `${card.getBoundingClientRect().left}px`;
+                    clone.style.top = `${card.getBoundingClientRect().top}px`;
+
+                    document.body.appendChild(clone);
+                    card.classList.add('opacity-30');
+                }, { passive: false });
+
+                card.addEventListener('touchmove', (e) => {
+                    if (!clone) return;
+                    e.preventDefault(); // Prevenir el scroll de la pantalla mientras se arrastra
+
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - touchStartX;
+                    const deltaY = touch.clientY - touchStartY;
+
+                    const initialRect = card.getBoundingClientRect();
+                    clone.style.left = `${initialRect.left + deltaX}px`;
+                    clone.style.top = `${initialRect.top + deltaY}px`;
+                }, { passive: false });
+
+                card.addEventListener('touchend', (e) => {
+                    if (!clone) return;
+
+                    const touch = e.changedTouches[0];
+                    // Ocultar temporalmente el clon para obtener el elemento bajo el dedo
+                    clone.style.display = 'none';
+                    const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                    // Eliminar el clon y restaurar opacidad
+                    clone.remove();
+                    clone = null;
+                    card.classList.remove('opacity-30');
+
+                    if (!targetElem) return;
+
+                    // Buscar si se soltó sobre la zona superior o la línea de tiempo
+                    const container = targetElem.closest('#timeline, #cards-container-top');
+                    if (container) {
+                        // Reordenación básica o inserción en contenedor
+                        const cardsInContainer = [...container.querySelectorAll('.card:not(.opacity-30)')];
+                        const afterElement = cardsInContainer.reduce((closest, child) => {
+                            const box = child.getBoundingClientRect();
+                            const offset = touch.clientX - box.left - box.width / 2;
+                            if (offset < 0 && offset > closest.offset) {
+                                return { offset: offset, element: child };
+                            } else {
+                                return closest;
+                            }
+                        }, { offset: Number.NEGATIVE_INFINITY }).element;
+
+                        if (afterElement == null) {
+                            container.appendChild(card);
+                        } else {
+                            container.insertBefore(card, afterElement);
+                        }
+
+                        // Guardar el estado si tienes la función configurada
+                        if (typeof saveBoardState === 'function') {
+                            saveBoardState();
+                        }
+                    }
+                });
+            }
+
+            // CONTENEDORES DRAG & DROP
+            function setupContainerDragAndDrop(container) {
+                if (!container) return;
+
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if (e.dataTransfer) {
+                        e.dataTransfer.dropEffect = 'move';
+                    }
+
+                    if (!draggedCard) return;
+
+                    const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+                    const afterElement = draggableElements.reduce((closest, child) => {
+                        const box = child.getBoundingClientRect();
+                        const offset = e.clientX - box.left - box.width / 2;
+                        if (offset < 0 && offset > closest.offset) {
+                            return { offset: offset, element: child };
+                        } else {
+                            return closest;
+                        }
+                    }, { offset: Number.NEGATIVE_INFINITY }).element;
+
+                    if (afterElement == null) {
+                        container.appendChild(draggedCard);
+                    } else {
+                        container.insertBefore(draggedCard, afterElement);
+                    }
+                });
+
+                container.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (draggedCard && !container.contains(draggedCard)) {
+                        container.appendChild(draggedCard);
+                    }
+                    forceResetDrag();
+                    saveBoardState(); // NUEVO: Guardar tras soltar una tarjeta
+                });
+            }
+
+            setupContainerDragAndDrop(cardsContainerTop);
+            setupContainerDragAndDrop(timeline);
+
+            loadGameState();
+
+            window.addEventListener('blur', forceResetDrag);
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    forceResetDrag();
+                }
+            });
+
+
+            // --- GESTIÓN DE JUGADORES (SETUP) ---
+
+            document.getElementById('add-player-btn').onclick = () => {
+                const input = document.getElementById('player-name-input');
+                const nombre = input.value.trim();
+
+                if (nombre && jugadoresTemporales.length < 20) {
+                    const colorAsignado = coloresJugadores[jugadoresTemporales.length % coloresJugadores.length].hex;
+                    jugadoresTemporales.push({
+                        id: Date.now(),
+                        nombre: nombre,
+                        color: colorAsignado
+                    });
+                    input.value = '';
+                    actualizarVistaPreviaJugadores();
+                    guardarNombresTemporales();
+                }
+            };
+
+            function actualizarVistaPreviaJugadores() {
+                const container = document.getElementById('players-list-display');
+                const startBtn = document.getElementById('start-btn');
+                container.innerHTML = '';
+
+                jugadoresTemporales.forEach((jugador, index) => {
+                    const badge = document.createElement('div');
+                    badge.draggable = true;
+                    badge.className = 'flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-black transition-all duration-200 shadow-sm select-none';
+                    badge.style.backgroundColor = jugador.color;
+                    badge.style.color = '#0f172a';
+
+                    badge.innerHTML = `
+            <span class="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 px-1 text-lg drag-handle">⋮⋮</span>
+            <span class="flex-1 py-1 cursor-pointer hover:underline name-zone px-1" draggable="false">${jugador.nombre}</span>
+            <button class="opacity-40 hover:opacity-100 hover:text-white transition-opacity text-xl px-2 cursor-pointer delete-btn" 
+                    type="button" style="background:none; border:none; color:inherit; font-weight:bold;">×</button>
+        `;
+
+                    // Cambiar color al hacer clic en el nombre
+                    badge.querySelector('.name-zone').onclick = () => {
+                        let colorIndex = coloresJugadores.findIndex(c => c.hex === jugador.color);
+                        colorIndex = (colorIndex + 1) % coloresJugadores.length;
+                        jugador.color = coloresJugadores[colorIndex].hex;
+                        actualizarVistaPreviaJugadores();
+                        guardarNombresTemporales();
+                    };
+
+                    // Eliminar jugador
+                    badge.querySelector('.delete-btn').onclick = () => {
+                        jugadoresTemporales.splice(index, 1);
+                        actualizarVistaPreviaJugadores();
+                        guardarNombresTemporales();
+                    };
+
+                    // Lógica de Drag & Drop (simplificada)
+                    badge.ondragstart = (e) => { if (e.target.classList.contains('name-zone')) e.preventDefault(); e.dataTransfer.setData('text', index); };
+                    badge.ondragover = (e) => e.preventDefault();
+                    badge.ondrop = (e) => {
+                        const fromIndex = e.dataTransfer.getData('text');
+                        const item = jugadoresTemporales.splice(fromIndex, 1)[0];
+                        jugadoresTemporales.splice(index, 0, item);
+                        actualizarVistaPreviaJugadores();
+                        guardarNombresTemporales();
+                    };
+
+                    container.appendChild(badge);
+                });
+
+                startBtn.disabled = jugadoresTemporales.length < 3;
+                startBtn.textContent = jugadoresTemporales.length < 3 ? `Mínimo 3 jugadores` : `Empezar Partida`;
+            }
+
+            function guardarNombresTemporales() {
+                localStorage.setItem(KEY_START + 'nombres_recientes', JSON.stringify(jugadoresTemporales));
+            }
+
+            function cargarNombresRecientes() {
+                const guardados = localStorage.getItem(KEY_START + 'nombres_recientes');
+                if (guardados) {
+                    jugadoresTemporales = JSON.parse(guardados);
+                    actualizarVistaPreviaJugadores();
+                }
+            }
+
+            // --- EJECUCIÓN INICIAL (AL FINAL DEL SCRIPT) ---
+            cargarNombresRecientes();
+
+
+            function restoreSavedState() {
+                // 1. Restaurar pregunta guardada en el modo Preguntas
+                const savedQuestion = localStorage.getItem(KEY_START + 'current_question');
+                if (savedQuestion) {
+                    renderQuestion(JSON.parse(savedQuestion));
+                }
+
+                // 2. Restaurar modo activo
+                const activeMode = localStorage.getItem(KEY_START + 'active_mode');
+                if (activeMode && activeMode !== 'selection') {
+                    switchMode(activeMode);
+                }
+            }
+
+            restoreSavedState();
+
+        });
+    </script>
+
+
+</body>
+
+</html>
